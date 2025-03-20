@@ -81,18 +81,18 @@ class cache{
     };
 
     inline long long tag(const long long value){
-        return value>>((int)log2(this->set_size) + 6);
+        return value >> (6+(int)log2(this->set_size));
 
-
-    }
-
-    inline long long offset(const long long value){
-        return value & 0b111111; // ALWAYS 6 bits (log2(64) = 6)
     }
 
     inline long long index(const long long value){
-        return (value ^ tag(value) << ((int)log2(this->set_size) + 6) ^ offset(value)) >> 6;
+        return (value >> 6&((1<<((int)log2(this->set_size)) -1));
     }
+
+    inline long long offset(const long long value){
+        return value & ((1<<6)-1);
+    }
+
 
 
     void read(const long long mem){ //reads from cache
@@ -201,8 +201,8 @@ class cache{
 
         std::cout << 
         "\ncache size:\t" << this->cache_size <<  
-        "\nset size:\t" << this->set_size << 
-        "\nblock size:\t64" << 
+        "\nnum of sets:\t" << this->set_size << 
+        "\ncache blocks per set:\t64" << 
         "\nassociativity:\t" << this->assoc << 
         "\nfifo?:\t\t" << this->replacement << 
         "\nwrite-back?:\t" << this->wb <<
