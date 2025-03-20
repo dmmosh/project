@@ -61,11 +61,14 @@ class cache{
         std::ifstream file(argv[5]);
 
         while(getline(file,str)){
-            if(str[0] == 'R'){
+            if(str.length()){
+                if(str[0] == 'R'){
                 this->read(std::stoll(str.substr(4), nullptr, 16));
-            } else {
+                } else {
                 this->write(std::stoll(str.substr(4), nullptr, 16));
+                }
             }
+            
         }
         
     };
@@ -130,7 +133,7 @@ class cache{
         
         for (int i = 0; i < this->assoc; i++) // iterate through the queue 
         {
-            if(this->cache_arr[mem_index][i].dirty == EMPTY){ // cache write MISS and queue is NOT empty
+            if(this->cache_arr[mem_index][i].dirty == EMPTY){ // cache write MISS and queue is NOT full
                 this->cache_arr[mem_index][i].tag = mem_tag;
                 this->cache_arr[mem_index][i].dirty = 0; // new block, no dirtyy bit 
                 if(this->wb == WRITE_THROUGH) this->mem_writes++;
