@@ -86,7 +86,7 @@ class cache{
     }
 
     inline long long index(const long long value){
-        return (value >> 6);
+        return (value >> 5);
     }
 
     inline long long offset(const long long value){
