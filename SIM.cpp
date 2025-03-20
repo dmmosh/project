@@ -100,7 +100,6 @@ class cache{
         long long mem_index = index(mem); // the index of memory
         long long mem_tag = tag(mem);
 
-        bool hit = false;
         for (int i = 0; i < this->assoc; i++)
         {
             if(this->cache_arr[mem_index][i].tag == mem_tag){ //  A read hit 
@@ -114,15 +113,13 @@ class cache{
                     this->cache_arr[mem_index][i].tag = mem_tag;
                     this->cache_arr[mem_index][i].dirty = dirty_temp;
                 }
-                hit = true;
                 this->hit_ctr++;
+                return;
             }
         }
-        if (!hit){
         this->mem_reads++;
         this->miss_ctr++;
 
-        }
         
 
     }
