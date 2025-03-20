@@ -121,7 +121,6 @@ class cache{
 
         // if theres a cache read HIT
         // add element to cache from memory (no more memory accesses, if write through policy then negate the mem write)
-        this->mem_reads++;
         write(mem, true);
         //if(this->wb == WRITE_THROUGH) this->mem_writes--; 
 
@@ -137,14 +136,15 @@ class cache{
         
         for (int i = 0; i < this->assoc; i++) // iterate through the queue 
         {
-            if(this->cache_arr[mem_index][i].dirty == EMPTY){ // cache write MISS and queue is NOT empty
+            if(this->cache_arr[mem_index][i].dirty == EMPTY){ // cache write MISS and the block is empty
+                this->mem_reads++; // loads from memory
                 this->cache_arr[mem_index][i].tag = mem_tag;
-                this->cache_arr[mem_index][i].dirty = 0; // new block, no dirtyy bit 
+                this->cache_arr[mem_index][i].dirty = 1;
                 if(this->wb == WRITE_THROUGH && read_miss == false) this->mem_writes++;
                 this->miss_ctr++;
                 return;
             }
-            if(this->cache_arr[mem_index][i].tag == mem_tag && read_miss == false){ // cache write HIT (in a cache miss this is never true)
+            if(this->cache_arr[mem_index][i].tag == mem_tag){ // cache write HIT (in a cache miss this is never true)
                 if(this->replacement == LRU){
                     while(i < this->assoc-1 && this->cache_arr[mem_index][i+1].dirty != -1){
                         this->cache_arr[mem_index][i].tag = this->cache_arr[mem_index][i+1].tag;
@@ -166,12 +166,14 @@ class cache{
             }
         }
         
-        // cache is FULL ( need replacement policy)
+        // cache is FULL ( need replacement policy) (a miss)
+
+
         // since FIFO and LRU order is maintained, simply shift all elements and assign the top to the new
 
         // if dirty to-be-evicted bit is on
         // only ever on if write-back 
-        if (this->wb== WRITE_BACK && this->cache_arr[mem_index][0].dirty == 1){
+        if (this->wb == WRITE_BACK && this->cache_arr[mem_index][0].dirty == 1){
             this->mem_writes++;
         }
 
@@ -181,8 +183,10 @@ class cache{
             this->cache_arr[mem_index][i].dirty = this->cache_arr[mem_index][i+1].dirty;
             i++;
         }
+        this->mem_reads++;
         this->cache_arr[mem_index][i].tag = mem_tag;
-        this->cache_arr[mem_index][i].dirty = false;
+        this->cache_arr[mem_index][i].dirty = 1;
+
         
         this->miss_ctr++;
 
