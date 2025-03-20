@@ -99,10 +99,11 @@ class cache{
         //std::cout << index(mem) << '\n';
         long long mem_index = index(mem); // the index of memory
         long long mem_tag = tag(mem);
-
+        bool hit = false;
         for (int i = 0; i < this->assoc; i++)
         {
             if(this->cache_arr[mem_index][i].tag == mem_tag){ //  A read hit 
+                hit = true;
                 if(this->replacement == LRU){ // if lru, move up
                     int8_t dirty_temp = this->cache_arr[mem_index][i].dirty;
                     while(i < this->assoc-1 && this->cache_arr[mem_index][i+1].dirty != -1){
@@ -114,11 +115,13 @@ class cache{
                     this->cache_arr[mem_index][i].dirty = dirty_temp;
                 }
                 this->hit_ctr++;
-                std::cout << "CACHE READ HIT\n";
+
                 return;
             }
         }
-        std::cout << "CACHE READ MISS!\n\n";
+        if (hit){
+            std::cout << "CACHE READ HIT AND MISS !\n";
+        }
         this->mem_reads++;
         this->miss_ctr++;
 
