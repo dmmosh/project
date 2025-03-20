@@ -102,9 +102,10 @@ class cache{
         for (int i = 0; i < this->assoc; i++)
         {
             if(this->cache_arr[mem_index][i].tag == mem_tag){ //  A read hit 
+
                 if(this->replacement == LRU){ // if lru, move up
                     int8_t dirty_temp = this->cache_arr[mem_index][i].dirty;
-                    while(i < this->assoc-1 && this->cache_arr[mem_index][i+1].dirty != -1){
+                    while(i < this->assoc-1 && this->cache_arr[mem_index][i+1].dirty != EMPTY){
                         this->cache_arr[mem_index][i].tag = this->cache_arr[mem_index][i+1].tag;
                         this->cache_arr[mem_index][i].dirty = this->cache_arr[mem_index][i+1].dirty;
                         i++;
