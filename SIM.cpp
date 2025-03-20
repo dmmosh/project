@@ -126,7 +126,6 @@ class cache{
     }
 
     void write(const long long mem){
-        return;
         //std::cout<< is_dirty(index(mem)) << '\n';
         long long mem_index = index(mem); // the index of memory
         long long mem_tag = tag(mem);
