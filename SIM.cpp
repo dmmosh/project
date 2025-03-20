@@ -118,8 +118,7 @@ class cache{
             }
         }
         this->mem_reads++;
-        this->mem_writes--;
-        write(mem);
+        this->miss_ctr++;
 
     }
 
