@@ -144,7 +144,7 @@ class cache{
                 this->miss_ctr++;
                 return;
             }
-            if(this->cache_arr[mem_index][i].tag == mem_tag){ // cache write HIT (in a cache miss this is never true)
+            if(this->cache_arr[mem_index][i].tag == mem_tag && read_miss == false){ // cache write HIT (in a cache miss this is never true)
                 if(this->replacement == LRU){
                     while(i < this->assoc-1 && this->cache_arr[mem_index][i+1].dirty != -1){
                         this->cache_arr[mem_index][i].tag = this->cache_arr[mem_index][i+1].tag;
