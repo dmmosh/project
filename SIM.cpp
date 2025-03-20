@@ -118,8 +118,13 @@ class cache{
                 return;
             }
         }
+
+        // if theres a cache read HIT
+        // add element to cache from memory (no more memory accesses, if write through policy then negate the mem write)
         this->mem_reads++;
-        this->miss_ctr++;
+        write(mem);
+        if(this->wb == WRITE_THROUGH) this->mem_writes--; 
+
         
 
     }
