@@ -225,8 +225,7 @@ int main(int argc, char* argv[]){
     cache a(argv);
     // a.debug();
     // a.print();
-    std::cout << std::bitset<32>(a.tag(0x123456789)) << '\n' << 
-    std::bitset<32>(a.index(0x123456789)) << '\n' << 
-    std::bitset<32>(a.offset(0x123456789)) << '\n';
+    int x = 0x123456789;
+    printf("%x\t%x\t%x\n", a.tag(x), a.index(x), a.offset(x));
     return 0;   
 }
