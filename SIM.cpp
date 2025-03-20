@@ -125,6 +125,8 @@ class cache{
     }
 
     void write(const long long mem){
+
+        /*
         //std::cout<< is_dirty(index(mem)) << '\n';
         long long mem_index = index(mem); // the index of memory
         long long mem_tag = tag(mem);
@@ -179,7 +181,8 @@ class cache{
         this->cache_arr[mem_index][i].dirty = false;
         
         this->miss_ctr++;
-        
+        */
+
 
     }
 
@@ -220,7 +223,10 @@ class cache{
 
 int main(int argc, char* argv[]){
     cache a(argv);
-    a.debug();
-    a.print();
+    // a.debug();
+    // a.print();
+    std::cout << std::bitset<32>(a.tag(0x123456789)) << '\n' << 
+    std::bitset<32>(a.index(0x123456789)) << '\n' << 
+    std::bitset<32>(a.offset(0x123456789)) << '\n';
     return 0;   
 }
