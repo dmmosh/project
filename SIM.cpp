@@ -61,14 +61,11 @@ class cache{
         std::ifstream file(argv[5]);
 
         while(getline(file,str)){
-            if(str.length()){
-                if(str[0] == 'R'){
+            if(str[0] == 'R'){
                 this->read(std::stoll(str.substr(4), nullptr, 16));
-                } else {
+            } else {
                 this->write(std::stoll(str.substr(4), nullptr, 16));
-                }
             }
-            
         }
         
     };
@@ -102,15 +99,13 @@ class cache{
         //std::cout << index(mem) << '\n';
         long long mem_index = index(mem); // the index of memory
         long long mem_tag = tag(mem);
-        this->mem_reads++;
-        this->miss_ctr++;
+
         for (int i = 0; i < this->assoc; i++)
         {
             if(this->cache_arr[mem_index][i].tag == mem_tag){ //  A read hit 
-
                 if(this->replacement == LRU){ // if lru, move up
                     int8_t dirty_temp = this->cache_arr[mem_index][i].dirty;
-                    while(i < this->assoc-1 && this->cache_arr[mem_index][i+1].dirty != EMPTY){
+                    while(i < this->assoc-1 && this->cache_arr[mem_index][i+1].dirty != -1){
                         this->cache_arr[mem_index][i].tag = this->cache_arr[mem_index][i+1].tag;
                         this->cache_arr[mem_index][i].dirty = this->cache_arr[mem_index][i+1].dirty;
                         i++;
@@ -118,11 +113,14 @@ class cache{
                     this->cache_arr[mem_index][i].tag = mem_tag;
                     this->cache_arr[mem_index][i].dirty = dirty_temp;
                 }
-                this->hit_ctr++;
 
+                this->hit_ctr++;
                 return;
             }
         }
+        this->mem_reads++;
+        this->miss_ctr++;
+        
 
     }
 
@@ -133,16 +131,16 @@ class cache{
         
         for (int i = 0; i < this->assoc; i++) // iterate through the queue 
         {
-            if(this->cache_arr[mem_index][i].dirty == EMPTY){ // cache write MISS and queue is NOT full
+            if(this->cache_arr[mem_index][i].dirty == EMPTY){ // cache write MISS and queue is NOT empty
                 this->cache_arr[mem_index][i].tag = mem_tag;
                 this->cache_arr[mem_index][i].dirty = 0; // new block, no dirtyy bit 
                 if(this->wb == WRITE_THROUGH) this->mem_writes++;
                 this->miss_ctr++;
                 return;
             }
-            if(this->cache_arr[mem_index][i].tag == mem_tag){ // cache writes HIT
+            if(this->cache_arr[mem_index][i].tag == mem_tag){ // cache write HIT
                 if(this->replacement == LRU){
-                    while(i < this->assoc-1 && this->cache_arr[mem_index][i+1].dirty != EMPTY){
+                    while(i < this->assoc-1 && this->cache_arr[mem_index][i+1].dirty != -1){
                         this->cache_arr[mem_index][i].tag = this->cache_arr[mem_index][i+1].tag;
                         this->cache_arr[mem_index][i].dirty = this->cache_arr[mem_index][i+1].dirty;
                         i++;
