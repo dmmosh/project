@@ -115,7 +115,6 @@ class cache{
                 }
 
                 this->hit_ctr++;
-                return;
             }
         }
         this->mem_reads++;
