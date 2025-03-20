@@ -173,7 +173,7 @@ class cache{
 
         // if dirty to-be-evicted bit is on
         // only ever on if write-back 
-        if (this->wb == WRITE_BACK && this->cache_arr[mem_index][0].dirty == 1){
+        if (this->cache_arr[mem_index][0].dirty == 1){
             this->mem_writes++;
         }
 
