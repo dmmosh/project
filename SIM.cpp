@@ -225,7 +225,7 @@ int main(int argc, char* argv[]){
     cache a(argv);
     // a.debug();
     // a.print();
-    int x = 0x123456789;
+    long long x = 0x123456789;
     printf("%x\t%x\t%x\n", a.tag(x), a.index(x), a.offset(x));
     return 0;   
 }
