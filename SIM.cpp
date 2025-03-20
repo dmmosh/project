@@ -118,7 +118,7 @@ class cache{
                 return;
             }
         }
-        std::cout << "CACHE READ MISS!\n";
+        std::cout << "CACHE READ MISS!\n\n";
         this->mem_reads++;
         this->miss_ctr++;
 
