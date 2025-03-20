@@ -140,11 +140,11 @@ class cache{
             if(this->cache_arr[mem_index][i].dirty == EMPTY){ // cache write MISS and queue is NOT empty
                 this->cache_arr[mem_index][i].tag = mem_tag;
                 this->cache_arr[mem_index][i].dirty = 0; // new block, no dirtyy bit 
-                if(this->wb == WRITE_THROUGH && read_miss == false) this->mem_writes++;
+                if(this->wb == WRITE_THROUGH) this->mem_writes++;
                 this->miss_ctr++;
                 return;
             }
-            if(this->cache_arr[mem_index][i].tag == mem_tag){ // cache write HIT
+            if(this->cache_arr[mem_index][i].tag == mem_tag){ // cache write HIT (in a cache miss this is never true)
                 if(this->replacement == LRU){
                     while(i < this->assoc-1 && this->cache_arr[mem_index][i+1].dirty != -1){
                         this->cache_arr[mem_index][i].tag = this->cache_arr[mem_index][i+1].tag;
