@@ -114,9 +114,11 @@ class cache{
                     this->cache_arr[mem_index][i].dirty = dirty_temp;
                 }
                 this->hit_ctr++;
+                std::cout << "CACHE READ HIT\n";
                 return;
             }
         }
+        std::cout << "CACHE READ MISS!\n";
         this->mem_reads++;
         this->miss_ctr++;
 
