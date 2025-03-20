@@ -123,7 +123,7 @@ class cache{
         // add element to cache from memory (no more memory accesses, if write through policy then negate the mem write)
         this->mem_reads++;
         write(mem);
-        if(this->wb == WRITE_THROUGH) this->mem_writes--; 
+        //if(this->wb == WRITE_THROUGH) this->mem_writes--; 
 
         
 
