@@ -64,7 +64,7 @@ class cache{
             if(str[0] == 'R'){
                 this->read(std::stoll(str.substr(4), nullptr, 16));
             } else {
-                this->write(std::stoll(str.substr(4), nullptr, 16));
+                this->write(std::stoll(str.substr(4), nullptr, 16), false);
             }
         }
         
@@ -122,14 +122,14 @@ class cache{
         // if theres a cache read HIT
         // add element to cache from memory (no more memory accesses, if write through policy then negate the mem write)
         this->mem_reads++;
-        write(mem);
+        write(mem, true);
         //if(this->wb == WRITE_THROUGH) this->mem_writes--; 
 
         
 
     }
 
-    void write(const long long mem){
+    void write(const long long mem, const bool read_miss){
 
         //std::cout<< is_dirty(index(mem)) << '\n';
         long long mem_index = index(mem); // the index of memory
@@ -140,7 +140,7 @@ class cache{
             if(this->cache_arr[mem_index][i].dirty == EMPTY){ // cache write MISS and queue is NOT empty
                 this->cache_arr[mem_index][i].tag = mem_tag;
                 this->cache_arr[mem_index][i].dirty = 0; // new block, no dirtyy bit 
-                if(this->wb == WRITE_THROUGH) this->mem_writes++;
+                if(this->wb == WRITE_THROUGH && read_miss == false) this->mem_writes++;
                 this->miss_ctr++;
                 return;
             }
