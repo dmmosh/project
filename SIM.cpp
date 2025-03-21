@@ -103,7 +103,7 @@ class cache{
             this->mem_writes++; // write to memory instantly
         }
         this->cache_arr[mem_index][i].tag = mem_tag; 
-        this->cache_arr[mem_index][i].dirty = 0;
+        this->cache_arr[mem_index][i].dirty = (READ) ? 0 : 1;
         this->miss_ctr++; // increase the miss ctr
     }
 
