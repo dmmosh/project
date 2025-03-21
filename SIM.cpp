@@ -65,7 +65,7 @@ class cache{
         while(getline(file,str)){
             if(str[0] == 'R'){
                 this->read_write(std::stoll(str.substr(4), nullptr, 16), true); // 1 = read
-            } else {
+            } else if (str[0] == 'W') {
                 this->read_write(std::stoll(str.substr(4), nullptr, 16), false); // 0 = write
             }
         }
