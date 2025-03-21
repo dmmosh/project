@@ -99,10 +99,8 @@ class cache{
     void insert(long long mem_index, long long mem_tag, int i, const bool rw){
         if(READ){ // if the cache miss is a READ
             this->mem_reads++; // reads from memory
-        } else {
-            if(WRITE_THROUGH){
-                this->mem_writes++; // write to memory instantly
-            }
+        } else if(WRITE_THROUGH) { // if a write (cache miss is NOT a read and policy is write through)
+            this->mem_writes++; // write to memory instantly
         }
         this->cache_arr[mem_index][i].tag = mem_tag; 
         this->cache_arr[mem_index][i].dirty = 0;
@@ -125,15 +123,6 @@ class cache{
             if(this->cache_arr[mem_index][i].tag == mem_tag){ // cache  HIT
                 
 
-                if(LRU){ // if lru, move to front
-                    while(i < this->assoc-1 && this->cache_arr[mem_index][i+1].dirty != -1){
-                        this->cache_arr[mem_index][i].tag = this->cache_arr[mem_index][i+1].tag;
-                        this->cache_arr[mem_index][i].dirty = this->cache_arr[mem_index][i+1].dirty;
-                        i++;
-                    }
-                    this->cache_arr[mem_index][i].tag = mem_tag;
-                    
-                }
                 // i is now at current element of last (if lru)
 
                 if(WRITE){
@@ -142,6 +131,18 @@ class cache{
                     } else { // if write back
                         this->cache_arr[mem_index][i].dirty = 1; // block is now DIRTY
                     }
+                }
+
+
+                if(LRU){ // if lru, move to front
+                    block temp = this->cache_arr[mem_index][i];
+                    int j = i;
+                    while(j < this->assoc-1 &&this->cache_arr[mem_index][j+1].dirty != EMPTY ){
+                        this->cache_arr[mem_index][j].tag = this->cache_arr[mem_index][j+1].tag;
+                        this->cache_arr[mem_index][j].dirty = this->cache_arr[mem_index][j+1].dirty;
+                    }
+                    this->cache_arr[mem_index][j] = temp;
+                    
                 }
 
                 this->hit_ctr++;
@@ -157,14 +158,14 @@ class cache{
             this->mem_writes++;
         }
 
-
-        int i =0;
-        while(i<this->assoc-1){
-            this->cache_arr[mem_index][i].tag = this->cache_arr[mem_index][i+1].tag;
-            this->cache_arr[mem_index][i].dirty = this->cache_arr[mem_index][i+1].dirty;
-            i++;
+        int j = 0;
+        while(j < this->assoc-1){
+            this->cache_arr[mem_index][j].tag = this->cache_arr[mem_index][j+1].tag;
+            this->cache_arr[mem_index][j].dirty = this->cache_arr[mem_index][j+1].dirty;
         }
-        insert(mem_index, mem_tag, i, rw);
+
+        
+        insert(mem_index, mem_tag, this->assoc-1, rw);
 
     }
 
