@@ -167,7 +167,7 @@ class cache{
         }
 
         
-        insert(mem_index, mem_tag, this->assoc-1, rw);
+        insert(mem_index, mem_tag, j, rw);
 
     }
 
