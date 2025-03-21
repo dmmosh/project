@@ -137,8 +137,9 @@ class cache{
                 if(WRITE){
                     if(WRITE_THROUGH){ // writes to memory as well (in a cache write hit )
                         this->mem_writes++; // writes to memory
-                    }
+                    } else { // if write back
                         this->cache_arr[mem_index][i].dirty = 1; // block is now DIRTY
+                    }
                 }
 
                 this->hit_ctr++;
