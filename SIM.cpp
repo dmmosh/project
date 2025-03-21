@@ -64,9 +64,9 @@ class cache{
 
         while(getline(file,str)){
             if(str[0] == 'R'){
-                this->read_write(std::stoll(str.substr(4), nullptr, 16), true); // 1 = read
+                this->read_write(std::stoull(str.substr(4), nullptr, 16), true); // 1 = read
             } else if (str[0] == 'W') {
-                this->read_write(std::stoll(str.substr(4), nullptr, 16), false); // 0 = write
+                this->read_write(std::stoull(str.substr(4), nullptr, 16), false); // 0 = write
             }
         }
         
@@ -149,7 +149,7 @@ class cache{
                 return;
             }
         }
-        
+        //dkvkjfk
         // cache miss AND FULL ( need replacement policy) (a miss)
 
 
@@ -207,7 +207,7 @@ class cache{
 
 int main(int argc, char* argv[]){
     cache a(argv);
-    a.debug();
+    //a.debug();
     a.print();
     // std::cout << std::bitset<32>(a.tag(0x123456789)) << '\n' << 
     // std::bitset<32>(a.index(0x123456789)) << '\n' << 
