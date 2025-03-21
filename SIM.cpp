@@ -147,6 +147,7 @@ class cache{
                 }
 
                 this->hit_ctr++;
+                return;
             }
         }
         
