@@ -6,11 +6,15 @@
 #include <fstream>
 #include <bitset>
 
-#define WRITE_THROUGH 0
 #define LRU 0
 #define EMPTY -1
-#define WRITE_BACK 1
 #define FIFO 1
+#define READ (rw) // READ/WRITE 1 = READ, 0 = WRITE
+#define WRITE (!(rw))
+#define WRITE_BACK (this->wb)
+#define WRITE_THROUGH (!(this->wb))
+#define FIFO (this->replacement)
+#define LRU (!(this->replacement))
 
 typedef struct block{
     int8_t dirty; // -1: empty, 0: not dirty, 1: dirty
@@ -62,9 +66,9 @@ class cache{
 
         while(getline(file,str)){
             if(str[0] == 'R'){
-                this->read(std::stoll(str.substr(4), nullptr, 16));
+                this->read_write(std::stoll(str.substr(4), nullptr, 16), true); // 1 = read
             } else {
-                this->write(std::stoll(str.substr(4), nullptr, 16), false);
+                this->read_write(std::stoll(str.substr(4), nullptr, 16), false); // 0 = write
             }
         }
         
@@ -121,14 +125,25 @@ class cache{
 
         // if theres a cache read HIT
         // add element to cache from memory (no more memory accesses, if write through policy then negate the mem write)
-        write(mem, true);
         //if(this->wb == WRITE_THROUGH) this->mem_writes--; 
 
         
 
     }
 
-    void write(const long long mem, const bool read_miss){
+    // insert
+    void insert(long long mem_index, long long mem_tag, int i, const bool rw){
+        if(READ){ // if the cache miss is a READ
+            this->mem_reads++; // reads from memory
+        } else if(WRITE_THROUGH) { // if a write (cache miss is NOT a read and policy is write through)
+            this->mem_writes++; // write to memory instantly
+        }
+        this->cache_arr[mem_index][i].tag = mem_tag; 
+        this->cache_arr[mem_index][i].dirty = 0;
+        this->miss_ctr++; // increase the miss ctr
+    }
+
+    void read_write(const long long mem, const bool rw){ // read or write 
 
         //std::cout<< is_dirty(index(mem)) << '\n';
         long long mem_index = index(mem); // the index of memory
@@ -136,29 +151,31 @@ class cache{
         
         for (int i = 0; i < this->assoc; i++) // iterate through the queue 
         {
-            if(this->cache_arr[mem_index][i].dirty == EMPTY){ // cache write MISS and the block is empty
-                this->mem_reads++; // loads from memory
-                this->cache_arr[mem_index][i].tag = mem_tag;
-                this->cache_arr[mem_index][i].dirty = 1;
-                if(this->wb == WRITE_THROUGH && read_miss == false) this->mem_writes++;
-                this->miss_ctr++;
+            if(this->cache_arr[mem_index][i].dirty == EMPTY){ // cache MISS (curr block is empty)
+                insert(mem_index, mem_tag, i, rw);
                 return;
+                
             }
-            if(this->cache_arr[mem_index][i].tag == mem_tag){ // cache write HIT (in a cache miss this is never true)
-                if(this->replacement == LRU){
+            if(this->cache_arr[mem_index][i].tag == mem_tag){ // cache  HIT
+                
+
+                if(this->replacement == LRU){ // if lru, move to front
                     while(i < this->assoc-1 && this->cache_arr[mem_index][i+1].dirty != -1){
                         this->cache_arr[mem_index][i].tag = this->cache_arr[mem_index][i+1].tag;
                         this->cache_arr[mem_index][i].dirty = this->cache_arr[mem_index][i+1].dirty;
                         i++;
                     }
                     this->cache_arr[mem_index][i].tag = mem_tag;
-
+                    
                 }
+                // i is now at current element of last (if lru)
 
-                if(this->wb == WRITE_THROUGH){ // copy contents in memory too
-                    this->mem_writes++;
-                } else { // if write back, mark mem tag as dirty
-                    this->cache_arr[mem_index][i].dirty = 1;
+                if(WRITE){
+                    if(WRITE_THROUGH){ // writes to memory as well (in a cache write hit )
+                        this->mem_writes++; // writes to memory
+                    } else { // if write back
+                        this->cache_arr[mem_index][i].dirty = 1; // block is now DIRTY
+                    }
                 }
 
                 this->hit_ctr++;
@@ -166,16 +183,14 @@ class cache{
             }
         }
         
-        // cache is FULL ( need replacement policy) (a miss)
+        // cache miss AND FULL ( need replacement policy) (a miss)
 
 
-        // since FIFO and LRU order is maintained, simply shift all elements and assign the top to the new
-
-        // if dirty to-be-evicted bit is on
-        // only ever on if write-back 
-        if (this->cache_arr[mem_index][0].dirty == 1){
+        // if write back and the to-be-evicted block is DIRTY
+        if(WRITE_BACK && this->cache_arr[mem_index][0].dirty == 1){
             this->mem_writes++;
         }
+
 
         int i =0;
         while(i<this->assoc-1){
@@ -183,13 +198,7 @@ class cache{
             this->cache_arr[mem_index][i].dirty = this->cache_arr[mem_index][i+1].dirty;
             i++;
         }
-        this->mem_reads++;
-        this->cache_arr[mem_index][i].tag = mem_tag;
-        this->cache_arr[mem_index][i].dirty = 1;
-
-        
-        this->miss_ctr++;
-
+        insert(mem_index, mem_tag, i, rw);
 
     }
 
