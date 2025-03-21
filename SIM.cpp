@@ -140,6 +140,7 @@ class cache{
                     while(j < this->assoc-1 &&this->cache_arr[mem_index][j+1].dirty != EMPTY ){
                         this->cache_arr[mem_index][j].tag = this->cache_arr[mem_index][j+1].tag;
                         this->cache_arr[mem_index][j].dirty = this->cache_arr[mem_index][j+1].dirty;
+                        j++;
                     }
                     this->cache_arr[mem_index][j] = temp;
                     
@@ -162,6 +163,7 @@ class cache{
         while(j < this->assoc-1){
             this->cache_arr[mem_index][j].tag = this->cache_arr[mem_index][j+1].tag;
             this->cache_arr[mem_index][j].dirty = this->cache_arr[mem_index][j+1].dirty;
+            j++;
         }
 
         
