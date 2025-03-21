@@ -156,7 +156,6 @@ class cache{
 
         // if write back and the to-be-evicted block is DIRTY
         if(WRITE_BACK && this->cache_arr[mem_index][0].dirty == 1){
-            this->mem_reads++;
             this->mem_writes++;
         }
 
