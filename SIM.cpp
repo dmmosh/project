@@ -6,9 +6,7 @@
 #include <fstream>
 #include <bitset>
 
-#define LRU 0
 #define EMPTY -1
-#define FIFO 1
 #define READ (rw) // READ/WRITE 1 = READ, 0 = WRITE
 #define WRITE (!(rw))
 #define WRITE_BACK (this->wb)
@@ -97,40 +95,6 @@ class cache{
         return value & ((1<<6)-1);
     }
 
-
-
-    void read(const long long mem){ //reads from cache
-        //std::cout << index(mem) << '\n';
-        long long mem_index = index(mem); // the index of memory
-        long long mem_tag = tag(mem);
-
-        for (int i = 0; i < this->assoc; i++)
-        {
-            if(this->cache_arr[mem_index][i].tag == mem_tag){ //  A read hit 
-                if(this->replacement == LRU){ // if lru, move up
-                    int8_t dirty_temp = this->cache_arr[mem_index][i].dirty;
-                    while(i < this->assoc-1 && this->cache_arr[mem_index][i+1].dirty != -1){
-                        this->cache_arr[mem_index][i].tag = this->cache_arr[mem_index][i+1].tag;
-                        this->cache_arr[mem_index][i].dirty = this->cache_arr[mem_index][i+1].dirty;
-                        i++;
-                    }
-                    this->cache_arr[mem_index][i].tag = mem_tag;
-                    this->cache_arr[mem_index][i].dirty = dirty_temp;
-                }
-
-                this->hit_ctr++;
-                return;
-            }
-        }
-
-        // if theres a cache read HIT
-        // add element to cache from memory (no more memory accesses, if write through policy then negate the mem write)
-        //if(this->wb == WRITE_THROUGH) this->mem_writes--; 
-
-        
-
-    }
-
     // insert
     void insert(long long mem_index, long long mem_tag, int i, const bool rw){
         if(READ){ // if the cache miss is a READ
@@ -159,7 +123,7 @@ class cache{
             if(this->cache_arr[mem_index][i].tag == mem_tag){ // cache  HIT
                 
 
-                if(this->replacement == LRU){ // if lru, move to front
+                if(LRU){ // if lru, move to front
                     while(i < this->assoc-1 && this->cache_arr[mem_index][i+1].dirty != -1){
                         this->cache_arr[mem_index][i].tag = this->cache_arr[mem_index][i+1].tag;
                         this->cache_arr[mem_index][i].dirty = this->cache_arr[mem_index][i+1].dirty;
