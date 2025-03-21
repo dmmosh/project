@@ -168,7 +168,6 @@ class cache{
 
         
         insert(mem_index, mem_tag, j, rw);
-        this->cache_arr[mem_index][j].dirty = 1;
 
     }
 
