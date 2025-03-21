@@ -99,8 +99,10 @@ class cache{
     void insert(long long mem_index, long long mem_tag, int i, const bool rw){
         if(READ){ // if the cache miss is a READ
             this->mem_reads++; // reads from memory
-        } else if(WRITE_THROUGH) { // if a write (cache miss is NOT a read and policy is write through)
-            this->mem_writes++; // write to memory instantly
+        } else {
+            if(WRITE_THROUGH){
+                this->mem_writes++; // write to memory instantly
+            }
         }
         this->cache_arr[mem_index][i].tag = mem_tag; 
         this->cache_arr[mem_index][i].dirty = 0;
