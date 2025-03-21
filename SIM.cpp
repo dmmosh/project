@@ -97,11 +97,10 @@ class cache{
 
     // insert
     void insert(long long mem_index, long long mem_tag, int i, const bool rw){
-        if(READ || WRITE_BACK){ // if the cache miss is a READ
-            this->mem_reads++; // reads from memory
-        } else if(WRITE_THROUGH) { // if a write (cache miss is NOT a read and policy is write through)
+         if(WRITE && WRITE_THROUGH) { // if a write (cache miss is NOT a read and policy is write through)
             this->mem_writes++; // write to memory instantly
         }
+        this->mem_reads++; // reads from memory
         this->cache_arr[mem_index][i].tag = mem_tag; 
         this->cache_arr[mem_index][i].dirty = (READ) ? 0 :1;
         this->miss_ctr++; // increase the miss ctr
